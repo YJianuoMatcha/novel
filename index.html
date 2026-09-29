@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Novel Studio V0.7</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">✦</div>
+      <div><div class="brand-name">Novel Studio</div><div class="brand-subtitle" data-i18n="brand.subtitle">小说创作工作台</div></div>
+    </div>
+
+    <button class="new-novel-btn" id="newNovelBtn">＋ <span data-i18n="novel.new">新建小说</span></button>
+    <div class="novel-list-title" data-i18n="novel.myNovels">我的小说</div>
+    <div id="novelList" class="novel-list"></div>
+
+    <div class="sidebar-bottom">
+      <button class="side-action" id="themeBtn">◐ <span data-i18n="settings.theme">切换主题</span></button>
+      <button class="side-action" id="settingsBtn">⚙ <span data-i18n="settings.title">设置</span></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="breadcrumbs"><span id="currentNovelName">我的小说</span><span>/</span><span id="currentChapterName">第 1 章</span></div>
+      <div class="top-actions">
+        <span class="save-status" id="saveStatus">● <span data-i18n="editor.saved">已保存</span></span>
+        <div class="select-wrap">🌐
+          <select id="languageSelect">
+            <option value="zh-CN">简体中文</option><option value="en-US">English</option>
+            <option value="ja-JP">日本語</option><option value="ko-KR">한국어</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <aside class="chapter-panel">
+        <div class="panel-heading"><span data-i18n="chapters.title">章节</span><button id="newChapterBtn" class="icon-btn">＋</button></div>
+        <div id="chapterList" class="chapter-list"></div>
+        <div class="outline-box">
+          <div class="mini-title">✦ <span data-i18n="outline.title">小说大纲</span></div>
+          <button id="outlineBtn" class="outline-launch" data-i18n="outline.open">打开 AI 大纲助手</button>
+        </div>
+        <div class="character-box">
+          <div class="mini-title">👤 <span data-i18n="characters.title">人物库</span></div>
+          <div id="characterMiniList"></div>
+          <button id="characterBtn" class="outline-launch" data-i18n="characters.manage">管理人物</button>
+          <button id="relationshipBtn" class="outline-launch relationship-launch" data-i18n="relationships.open">人物关系图</button>
+          <button id="chapterSummaryBtn" class="outline-launch" data-i18n="summary.open">章节摘要</button>
+      <button id="timelineBtn" class="sidebar-btn">⏳ 时间线</button>
+      <button id="foreshadowBtn" class="sidebar-btn">🧩 伏笔追踪</button>
+          <button id="knowledgeBtn" class="outline-launch knowledge-launch" data-i18n="knowledge.open">小说数据库总览</button>
+        </div>
+      </aside>
+
+      <section class="editor-area">
+        <div class="editor-toolbar">
+          <button class="toolbar-btn" data-action="bold"><b>B</b></button>
+          <button class="toolbar-btn" data-action="italic"><i>I</i></button>
+          <span class="toolbar-divider"></span>
+          <button class="toolbar-btn" data-action="heading">H</button>
+          <button class="toolbar-btn" data-action="quote">❝</button>
+          <div class="toolbar-spacer"></div>
+          <span class="word-count" id="wordCount">0</span>
+        </div>
+        <input id="chapterTitle" class="chapter-title" value="" />
+        <textarea id="editor" class="editor" spellcheck="false" placeholder="从这里开始写你的故事……"></textarea>
+      </section>
+
+      <aside class="assistant-panel">
+        <div class="assistant-header">
+          <div class="assistant-title">✦ <span data-i18n="ai.title">AI 助手</span></div>
+          <span class="ai-online" id="aiStatus">●</span>
+        </div>
+
+        <div class="ai-mode-tabs">
+          <button class="mode-tab active" data-mode="continue" data-i18n="ai.continue">继续写</button>
+          <button class="mode-tab" data-mode="polish" data-i18n="ai.polish">润色</button>
+          <button class="mode-tab" data-mode="expand" data-i18n="ai.expand">扩写</button>
+          <button class="mode-tab" data-mode="plot" data-i18n="ai.plot">剧情</button>
+        </div>
+
+        <textarea id="aiInstruction" class="ai-input" data-i18n-placeholder="ai.placeholder" placeholder="告诉 AI 你想怎么修改或发展剧情……"></textarea>
+        <button id="sendAiBtn" class="send-ai">✦ <span data-i18n="ai.send">发送给 AI</span></button>
+
+        <div class="ai-response" id="aiResponse">
+          <div class="empty-ai">
+            <div>✦</div>
+            <p data-i18n="ai.help">选择一个功能，然后告诉 AI 你想做什么。</p>
+          </div>
+        </div>
+        <button id="scanCharactersBtn" class="scan-characters">👤 <span data-i18n="characters.scan">分析本章人物变化</span></button>
+        <button id="syncBtn" class="scan-characters sync-launch">✦ <span data-i18n="sync.open">AI 全面分析本章</span></button>
+
+        <div class="writing-settings">
+          <div class="setting-label" data-i18n="writing.language">创作语言</div>
+          <select id="writingLanguage">
+            <option value="Chinese">中文</option><option value="English">English</option>
+            <option value="Japanese">日本語</option><option value="Korean">한국어</option>
+          </select>
+        </div>
+      </aside>
+    </section>
+  </main>
+</div>
+
+<div class="modal hidden" id="outlineModal">
+  <div class="modal-card outline-modal">
+    <div class="modal-header"><h2>✦ <span data-i18n="outline.title">小说大纲</span></h2><button class="close-btn" id="closeOutline">×</button></div>
+    <div class="outline-form">
+      <label data-i18n="outline.premise">告诉 AI 你想写什么</label>
+      <textarea id="outlinePrompt" placeholder="例如：一个普通大学生意外发现学校里隐藏着一间不存在于地图上的实验室……"></textarea>
+      <button id="generateOutline" class="send-ai">✦ <span data-i18n="outline.generate">生成大纲</span></button>
+    </div>
+    <div id="outlineResult" class="outline-result"></div>
+  </div>
+</div>
+
+
+
+<div class="modal hidden" id="summaryModal">
+  <div class="modal-card summary-modal">
+    <div class="modal-header"><h2>📝 <span data-i18n="summary.title">章节摘要</span></h2><button class="close-btn" id="closeSummary">×</button></div>
+    <div class="summary-meta"><strong id="summaryChapterName"></strong><span id="summaryChapterStatus"></span></div>
+    <div class="summary-toolbar"><button id="generateSummaryBtn" class="send-ai" data-i18n="summary.generate">生成本章摘要</button></div>
+    <div id="summaryResult" class="summary-result"></div>
+  </div>
+</div>
+
+
+<div class="modal hidden" id="syncModal">
+  <div class="modal-card sync-modal">
+    <div class="modal-header"><h2>✦ <span data-i18n="sync.title">AI 数据库同步</span></h2><button class="close-btn" id="closeSync">×</button></div>
+    <div class="summary-meta"><strong id="syncChapterName"></strong><span>人物 · 关系 · 世界观 · 时间线 · 伏笔</span></div>
+    <div class="summary-toolbar"><button id="syncAnalyzeBtn" class="send-ai" data-i18n="sync.analyze">分析并生成更新建议</button></div>
+    <div id="syncResult" class="sync-result"></div>
+  </div>
+</div>
+
+<div class="modal hidden" id="characterModal">
+  <div class="modal-card character-modal">
+    <div class="modal-header">
+      <h2>👤 <span data-i18n="characters.title">人物库</span></h2>
+      <button class="close-btn" id="closeCharacter">×</button>
+    </div>
+    <div class="character-layout">
+      <div class="character-list-large" id="characterListLarge"></div>
+      <div class="character-detail">
+        <div class="character-detail-head">
+          <input id="characterName" placeholder="人物姓名" />
+          <select id="characterRole">
+            <option value="">角色</option><option value="主角">主角</option>
+            <option value="配角">配角</option><option value="反派">反派</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <label>性格</label><textarea id="characterPersonality"></textarea>
+        <label>目标</label><textarea id="characterGoals"></textarea>
+        <label>关系</label><textarea id="characterRelationships"></textarea>
+        <label>其他备注</label><textarea id="characterNotes"></textarea>
+        <div class="character-actions">
+          <button id="saveCharacter" class="send-ai">保存人物</button>
+          <button id="deleteCharacter" class="outline-save">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal hidden" id="relationshipModal">
+  <div class="modal-card relationship-modal">
+    <div class="modal-header"><h2>🔗 <span data-i18n="relationships.title">人物关系图</span></h2><button class="close-btn" id="closeRelationship">×</button></div>
+    <div class="relationship-toolbar">
+      <div class="relationship-help" data-i18n="relationships.help">点击节点查看人物；拖动节点调整布局。关系包含类型、强度、状态和章节证据，并可由 AI 提议更新。</div>
+      <div class="relationship-toolbar-actions">
+        <input id="relationshipSearch" class="relationship-search" placeholder="搜索人物或关系…" />
+        <select id="relationshipStatusFilter" class="relationship-filter"><option value="all">全部状态</option><option value="active">进行中</option><option value="changed">已变化</option><option value="ended">已结束</option><option value="uncertain">不确定</option></select>
+        <button id="resetGraphLayout" class="outline-btn">↺</button>
+        <button id="addRelationship" class="send-ai" data-i18n="relationships.add">＋ 添加关系</button>
+      </div>
+    </div>
+    <div id="relationshipGraph" class="relationship-graph"></div>
+    <div class="relationship-legend"><span>● 人物</span><span>— 关系</span><span>箭头表示 A → B</span><span>线越粗 = 关系强度越高</span></div>
+    <div id="relationshipList" class="relationship-list"></div>
+  </div>
+</div>
+
+<div class="modal hidden" id="relationshipEditorModal">
+  <div class="modal-card relationship-editor-modal">
+    <div class="modal-header"><h2 data-i18n="relationships.editTitle">编辑人物关系</h2><button class="close-btn" id="closeRelationshipEditor">×</button></div>
+    <div class="relationship-form">
+      <label data-i18n="relationships.from">人物 A</label><select id="relationshipSource"></select>
+      <label data-i18n="relationships.to">人物 B</label><select id="relationshipTarget"></select>
+      <label data-i18n="relationships.type">关系类型</label><input id="relationshipType" placeholder="朋友 / 敌对 / 师生 / 亲属 / 暧昧……" />
+      <div class="relationship-grid-2"><div><label>关系强度 <span id="relationshipStrengthValue">0.5</span></label><input id="relationshipStrength" type="range" min="0" max="1" step="0.05" value="0.5" /></div><div><label>状态</label><select id="relationshipStatus"><option value="active">进行中</option><option value="changed">已变化</option><option value="ended">已结束</option><option value="uncertain">不确定</option></select></div></div>
+      <label data-i18n="relationships.note">关系说明</label><textarea id="relationshipNote" placeholder="例如：两人因为实验室事件暂时合作。"></textarea>
+      <label>证据章节</label><input id="relationshipEvidence" placeholder="例如：第 8 章；第 12 章" />
+      <div class="relationship-editor-actions"><button id="saveRelationship" class="send-ai" data-i18n="relationships.save">保存关系</button><button id="deleteRelationship" class="outline-save" data-i18n="relationships.delete">删除</button></div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal hidden" id="knowledgeModal">
+  <div class="modal-card knowledge-modal">
+    <div class="modal-header"><h2>🗂️ <span data-i18n="knowledge.title">小说数据库</span></h2><button class="close-btn" id="closeKnowledge">×</button></div>
+    <div class="knowledge-toolbar">
+      <input id="knowledgeSearch" class="knowledge-search" data-i18n-placeholder="knowledge.search" placeholder="搜索人物、设定、事件、伏笔……" />
+      <select id="knowledgeTypeFilter" class="knowledge-filter"><option value="all">全部</option><option value="character">人物</option><option value="relationship">关系</option><option value="world">世界观</option><option value="timeline">时间线</option><option value="foreshadow">伏笔</option></select>
+      <select id="knowledgeChapterFilter" class="knowledge-filter"><option value="all">来源章节：全部</option></select>
+    </div>
+    <div id="knowledgeStats" class="knowledge-stats"></div>
+    <div class="knowledge-list-head"><strong>Knowledge Base</strong><span id="knowledgeCount"></span></div>
+    <div id="knowledgeResult" class="knowledge-result"></div>
+  </div>
+</div>
+
+<div class="modal hidden" id="settingsModal">
+  <div class="modal-card">
+    <div class="modal-header"><h2 data-i18n="settings.title">设置</h2><button class="close-btn" id="closeSettings">×</button></div>
+    <div class="setting-row">
+      <div><strong data-i18n="settings.interfaceLanguage">界面语言</strong><p data-i18n="settings.interfaceDescription">改变网站菜单、按钮和提示文字。</p></div>
+      <select id="languageSelectModal"><option value="zh-CN">简体中文</option><option value="en-US">English</option><option value="ja-JP">日本語</option><option value="ko-KR">한국어</option></select>
+    </div>
+    <div class="setting-row">
+      <div><strong data-i18n="settings.theme">主题</strong><p data-i18n="settings.themeDescription">在浅色和深色主题之间切换。</p></div>
+      <button id="modalThemeBtn" class="outline-btn">◐</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+
+  <section id="timelinePage" class="app-page">
+    <div class="page-header">
+      <div><h2>⏳ 故事时间线</h2><p>按故事发生时间组织事件，同时保留章节顺序作为独立信息。</p></div>
+    </div>
+  </section>
+  <section id="foreshadowPage" class="app-page">
+    <div class="page-header"><div><h2>🧩 伏笔追踪</h2><p>追踪伏笔生命周期与剧情推进。</p></div></div>
+  </section>
+</body>
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+  const b=document.getElementById("timelineBtn");
+  if(b) b.addEventListener("click",()=>openTimelinePage());
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+ const b=document.getElementById("foreshadowBtn");
+ if(b)b.addEventListener("click",()=>openForeshadowingPage());
+});
+</script>
+</html>

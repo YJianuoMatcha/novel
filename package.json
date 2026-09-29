@@ -1,0 +1,16 @@
+{
+  "name": "novel-studio-v0.9",
+  "version": "0.9.0",
+  "private": true,
+  "description": "AI-assisted multilingual novel writing workspace with structured novel database synchronization",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "openai": "^5.16.0"
+  }
+}
